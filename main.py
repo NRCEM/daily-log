@@ -4,11 +4,14 @@ from datetime import date, timedelta
 
 def add_log(text):  
 
-    with open("data.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
-        data.append(text)
+    try:
+        with open("data.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        data = []
 
     with open("data.json", "w", encoding="utf-8") as f:
+        data.append(text)
         json.dump(data, f, indent = 2, ensure_ascii=False)
 
 
