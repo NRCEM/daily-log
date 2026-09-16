@@ -18,11 +18,13 @@ def save_data(data):
 
 
 def add_log(entry):  
-
-    data = load_data()
-    data.append(entry)
-    save_data(data)
-    print(f'Successfully added: {entry["text"]} on {entry["date"]}')
+    if entry["text"].strip():
+        data = load_data()
+        data.append(entry)
+        save_data(data)
+        print(f'Successfully added: {entry["text"]} on {entry["date"]}')
+    else:
+        print("Error: log cannot be empty.")
 
 def list_logs():
 
