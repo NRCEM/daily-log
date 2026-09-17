@@ -2,58 +2,75 @@ import argparse
 import json
 from datetime import date, timedelta
 
-def load_data():
 
+def load_data():
     try:
         with open("data.json", "r", encoding="utf-8") as f:
             data = json.load(f)
     except FileNotFoundError:
         data = []
+    except json.JSONDecodeError:
+        print("Error: Could not read data.json because it contains invalid JSON.")
+        print("Please fix the file and try again.")
+        return None
+
     return data
 
+
 def save_data(data):
-    
     with open("data.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, indent = 2, ensure_ascii=False)
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
 
-def add_log(entry):  
+def add_log(entry):
     if entry["text"].strip():
         data = load_data()
+        if data is None:
+            return
+
         data.append(entry)
         save_data(data)
+
         print(f'Successfully added: {entry["text"]} on {entry["date"]}')
     else:
         print("Error: log cannot be empty.")
 
-def list_logs():
 
-    data = load_data() 
+def list_logs():
+    data = load_data()
+    if data is None:
+        return
+
     print("Logs:")
     for d in data:
         print(f'{d["date"]}: {d["text"]}')
 
 
 def streak_logs(current):
-
     data = load_data()
+    if data is None:
+        return
+
     dates = set()
     streak = 0
+
     for d in data:
         dates.add(d["date"])
     while current.isoformat() in dates:
         streak += 1
         current -= timedelta(days=1)
+
     if streak == 1:
         print("Current streak: 1 day")
-    else: print(f'Current streak: {streak} days')
+    else:
+        print(f'Current streak: {streak} days')
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(
-        dest = "command",
-        required = True
+        dest="command",
+        required=True
     )
 
     add_parser = subparsers.add_parser("add")
@@ -71,7 +88,3 @@ if __name__ == "__main__":
         list_logs()
     elif args.command == "streak":
         streak_logs(date.today())
-
-    #add
-    #list
-    #streak
